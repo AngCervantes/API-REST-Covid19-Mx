@@ -15,10 +15,8 @@ import lombok.Data;
 public class Catalogo_Municipio {
 	
 	@Id
-	@Column(length = 6)	
-	private String id_municipio;
-	@Column(length = 4)
-	private String clave_municipio;
+	private int id_municipio;
+	private int clave_municipio;
 	@Column(length = 100)
 	private String municipio;
 	@ManyToOne

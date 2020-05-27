@@ -13,8 +13,7 @@ import lombok.Data;
 public class Catalogo_Entidad {
 	
 	@Id
-	@Column(length = 4)
-	private String clave_entidad;
+	private int clave_entidad;
 	@Column(length = 45)
 	private String entidad_federativa;
 	@Column(length = 4)

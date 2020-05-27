@@ -12,27 +12,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cervantes.covid19mx.model.Catalogo_Municipio;
+import com.cervantes.covid19mx.payload.DatosPorMunicipio;
 import com.cervantes.covid19mx.payload.response.MensajeRespuesta;
-import com.cervantes.covid19mx.service.CatalogoMunicipioService;
+import com.cervantes.covid19mx.service.Covid19MexicoCortaService;
 
 @RestController
-@RequestMapping("/api/municipio")
+@RequestMapping("/api/covid")
 @CrossOrigin(origins = "*", maxAge = 3600)
-public class MunicipioRestController {
-
-	private static final Logger logger = LoggerFactory.getLogger(MunicipioRestController.class);
-
+public class Covid19MexicoRestController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(Covid19MexicoRestController.class);
+	
 	@Autowired
-	private CatalogoMunicipioService municipioService;
-
+	private Covid19MexicoCortaService covidService;
+	
 	@GetMapping("/getByMunicipio")
-	public ResponseEntity<?> getMunicipioByName(
-			@RequestParam(name = "municipio", required = true, defaultValue = "") String municipio) {
+	public ResponseEntity<?> getDatosPorMunicipio(@RequestParam(name = "municipio", required = true, defaultValue = "") String municipio){
 		if (!municipio.equals("")) {
-			List<Catalogo_Municipio> municipios = municipioService.getMunicipiosPorNombre(municipio);
-			if (municipios != null) {
-				return ResponseEntity.ok(municipios);
+			List<DatosPorMunicipio> datosPorMunicipios = covidService.getDatosPorMunicipio(municipio);
+			if (datosPorMunicipios != null) {
+				return ResponseEntity.ok(datosPorMunicipios);
 			} else {
 				logger.error(">> La lista de municipios es nula");
 				return ResponseEntity.badRequest().body(new MensajeRespuesta(
@@ -44,4 +43,5 @@ public class MunicipioRestController {
 					"Error: ¡No se ha ingreaso los parametros correctos!"));
 		}
 	}
+
 }
