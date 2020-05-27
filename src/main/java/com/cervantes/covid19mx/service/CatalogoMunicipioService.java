@@ -21,7 +21,7 @@ public class CatalogoMunicipioService implements ICatalogoMunicipioService {
 	@Override
 	public List<Catalogo_Municipio> getMunicipiosPorNombre(String municipio) {
 		municipio = municipio.toUpperCase();
-		List<Catalogo_Municipio> municipios = municipioRepository.findByMunicipio(municipio);
+		List<Catalogo_Municipio> municipios = municipioRepository.findByMunicipioContains(municipio);
 		if (municipios != null) {
 			if (!municipios.isEmpty()) {
 				return municipios;

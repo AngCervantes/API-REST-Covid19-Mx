@@ -12,5 +12,7 @@ public interface IMunicipioRepository extends JpaRepository<Catalogo_Municipio, 
 	
 	List<Catalogo_Municipio> findByMunicipio(String municipio);
 	
+	List<Catalogo_Municipio> findByMunicipioContains(String municipio);
+	
 
 }
