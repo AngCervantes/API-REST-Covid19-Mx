@@ -25,31 +25,37 @@ public class DatosPorMunicipio {
 	private int casosActivos;
 	private int casosAcumulados;
 	private int defunciones;
-	private int casosRecuperados;	
-	
-	public void obtenerDatos() throws ParseException {
+	private int casosRecuperados;
+	@JsonIgnore
+	private final int diasDeRecuperacion = 15;
+
+	public void obtenerDatos() throws ParseException {		
 		this.obtenerCasosAcumulados();
 		this.obtenerCasosActivosYRecuperados();
 		this.obtenerDefunciones();
 	}
-	
-	private void obtenerCasosActivosYRecuperados() {
+
+	private void obtenerCasosActivosYRecuperados() throws ParseException {
 		if (this.casosTotales != null) {
 			if (!this.casosTotales.isEmpty()) {
 				Date fechaDeHoy = new Date();
 				int recuperados = 0;
 				int activos = 0;
-				//-- 
+				// --
 				for (Covid19MexicoCorta caso : this.casosTotales) {
 					Date fechaSintomas = caso.getFecha_sintomas();
 					Calendar calendarRecuperacion = Calendar.getInstance();
 					calendarRecuperacion.setTime(fechaSintomas);
-					calendarRecuperacion.add(Calendar.DATE, 14);
+					calendarRecuperacion.add(Calendar.DATE, this.diasDeRecuperacion);
 					Date fechaRecuperacion = calendarRecuperacion.getTime();
 					if (fechaDeHoy.compareTo(fechaRecuperacion) > 0) {
-						recuperados++;
+						if (!this.verificarDefuncion(caso.getFecha_defuncion())) {
+							recuperados++;
+						}
 					} else {
-						activos++;
+						if (!this.verificarDefuncion(caso.getFecha_defuncion())) {
+							activos++;
+						}
 					}
 				}
 				this.casosActivos = activos;
@@ -80,10 +86,8 @@ public class DatosPorMunicipio {
 		if (this.casosTotales != null) {
 			if (!this.casosTotales.isEmpty()) {
 				int fallecidos = 0;
-				SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
-				Date noFallecido = sdformat.parse("2000-01-01");
 				for (Covid19MexicoCorta caso : this.casosTotales) {
-					if (caso.getFecha_defuncion().compareTo(noFallecido) > 0) {
+					if (this.verificarDefuncion(caso.getFecha_defuncion())) {
 						fallecidos++;
 					}
 				}
@@ -95,6 +99,15 @@ public class DatosPorMunicipio {
 			this.defunciones = 0;
 		}
 	}
-	
+
+	private Boolean verificarDefuncion(Date fechaDefuncion) throws ParseException {
+		SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
+		Date noFallecido = sdformat.parse("2000-01-01");
+		if (fechaDefuncion.compareTo(noFallecido) > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 }
