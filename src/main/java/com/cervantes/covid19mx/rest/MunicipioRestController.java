@@ -29,19 +29,19 @@ public class MunicipioRestController {
 	@GetMapping("/getByMunicipio")
 	public ResponseEntity<?> getMunicipioByName(
 			@RequestParam(name = "municipio", required = true, defaultValue = "") String municipio) {
-		if (!municipio.equals("")) {
-			List<Catalogo_Municipio> municipios = municipioService.getMunicipiosPorNombre(municipio);
-			if (municipios != null) {
-				return ResponseEntity.ok(municipios);
-			} else {
-				logger.error(">> La lista de municipios es nula");
-				return ResponseEntity.badRequest().body(new MensajeRespuesta(
-						"Error: ¡No se han encontrado coincidencias, verifica e inténtalo nuevamente!"));
-			}
-		} else {
+		if(municipio.equals("")) {
 			logger.error(">> El valor municipio está vacío");
 			return ResponseEntity.badRequest().body(new MensajeRespuesta(
-					"Error: ¡No se ha ingreaso los parametros correctos!"));
+					"Error: ¡No se han ingresado los parametros correctos!"));
 		}
+
+		List<Catalogo_Municipio> municipios = municipioService.getMunicipiosPorNombre(municipio);
+		if(municipios == null) {
+			logger.error(">> La lista de municipios es nula");
+			return ResponseEntity.badRequest().body(new MensajeRespuesta(
+					"Error: ¡No se han encontrado coincidencias, verifica e inténtalo nuevamente!"));
+		}
+
+		return ResponseEntity.ok(municipios);
 	}
 }

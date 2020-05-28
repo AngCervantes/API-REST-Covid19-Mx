@@ -27,50 +27,38 @@ public class Covid19MexicoCortaService implements ICovid19MexicoCortaService {
 
 	@Override
 	public List<DatosPorMunicipio> getDatosPorMunicipio(String nombreDeMunicipio) {
-		nombreDeMunicipio = nombreDeMunicipio.toUpperCase();
-		List<Catalogo_Municipio> municipios = municipioRepository.findByMunicipioContains(nombreDeMunicipio);
+		List<Catalogo_Municipio> municipios = municipioRepository.findByMunicipioContains(nombreDeMunicipio.toUpperCase());
 		List<DatosPorMunicipio> datosDeMunicipios = new ArrayList<>();
-		if (municipios != null) {
-			if (!municipios.isEmpty()) {
-				if (municipios.size() == 1) {
-					List<Covid19MexicoCorta> casos = covidRepository.findByEntidadAndMunicipio(
-							municipios.get(0).getEntidad().getClave_entidad(), municipios.get(0).getClave_municipio());
-					DatosPorMunicipio municipioEncontrado = new DatosPorMunicipio();
-					municipioEncontrado.setMunicipio(municipios.get(0));
-					municipioEncontrado.setCasosTotales(casos);
-					try {
-						municipioEncontrado.obtenerDatos();
-					} catch (ParseException ex) {
-						logger.error(">> Ocurrio un error al obtener los datos de el municipio: { "
-								+ municipioEncontrado.getMunicipio() + " }", ex.getCause());
-					}
-					datosDeMunicipios.add(municipioEncontrado);
-				} else {
-					logger.warn(">> Existe más de un municipio con esa coincidencia");
-					for (Catalogo_Municipio municipio : municipios) {
-						List<Covid19MexicoCorta> casos = covidRepository.findByEntidadAndMunicipio(
-								municipio.getEntidad().getClave_entidad(), municipio.getClave_municipio());
-						DatosPorMunicipio municipioEncontrado = new DatosPorMunicipio();
-						municipioEncontrado.setMunicipio(municipio);
-						municipioEncontrado.setCasosTotales(casos);
-						try {
-							municipioEncontrado.obtenerDatos();
-						} catch (ParseException ex) {
-							logger.error(">> Ocurrio un error al obtener los datos de el municipio: { "
-									+ municipio.getMunicipio() + " }", ex.getCause());
-						}
-						datosDeMunicipios.add(municipioEncontrado);
-					}
-				}
-				return datosDeMunicipios;
-			} else {
-				logger.error(">> La lista de municipios es vacía");
-				return null;
-			}
-		} else {
+		if(municipios == null){
 			logger.error(">> La lista de municipios es nula");
 			return null;
 		}
+
+		if(municipios.isEmpty()) {
+			logger.error(">> La lista de municipios es vacía");
+			return null;
+		}
+
+		if (municipios.size() > 1) {
+			logger.warn(">> Existe más de un municipio con esa coincidencia");
+		}
+
+		for (Catalogo_Municipio municipio : municipios) {
+			List<Covid19MexicoCorta> casos = covidRepository.findByEntidadAndMunicipio(
+					municipio.getEntidad().getClave_entidad(), municipio.getClave_municipio());
+			DatosPorMunicipio municipioEncontrado = new DatosPorMunicipio();
+			municipioEncontrado.setMunicipio(municipio);
+			municipioEncontrado.setCasosTotales(casos);
+			try {
+				municipioEncontrado.obtenerDatos();
+			} catch (ParseException ex) {
+				logger.error(">> Ocurrio un error al obtener los datos de el municipio: { "
+						+ municipio.getMunicipio() + " }", ex.getCause());
+			}
+			datosDeMunicipios.add(municipioEncontrado);
+		}
+
+		return datosDeMunicipios;
 	}
 
 }
