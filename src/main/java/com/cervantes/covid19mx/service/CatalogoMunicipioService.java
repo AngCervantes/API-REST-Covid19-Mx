@@ -20,19 +20,13 @@ public class CatalogoMunicipioService implements ICatalogoMunicipioService {
 
 	@Override
 	public List<Catalogo_Municipio> getMunicipiosPorNombre(String municipio) {
-		municipio = municipio.toUpperCase();
-		List<Catalogo_Municipio> municipios = municipioRepository.findByMunicipioContains(municipio);
-		if (municipios != null) {
-			if (!municipios.isEmpty()) {
-				return municipios;
-			} else {
-				logger.error(">> La lista municipios esta vacía");
-				return null;
-			}
-		} else {
+		List<Catalogo_Municipio> municipios = municipioRepository.findByMunicipioContains(municipio.toUpperCase());
+		if(municipios.isEmpty()) {
 			logger.error(">> La lista municipios es null");
 			return null;
 		}
+
+		return municipios;
 	}
 
 }

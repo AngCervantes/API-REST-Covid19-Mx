@@ -28,20 +28,20 @@ public class Covid19MexicoRestController {
 	
 	@GetMapping("/getByMunicipio")
 	public ResponseEntity<?> getDatosPorMunicipio(@RequestParam(name = "municipio", required = true, defaultValue = "") String municipio){
-		if (!municipio.equals("")) {
-			List<DatosPorMunicipio> datosPorMunicipios = covidService.getDatosPorMunicipio(municipio);
-			if (datosPorMunicipios != null) {
-				return ResponseEntity.ok(datosPorMunicipios);
-			} else {
-				logger.error(">> La lista de municipios es nula");
-				return ResponseEntity.badRequest().body(new MensajeRespuesta(
-						"Error: ¡No se han encontrado coincidencias, verifica e inténtalo nuevamente!"));
-			}
-		} else {
+		if(municipio.equals("")) {
 			logger.error(">> El valor municipio está vacío");
 			return ResponseEntity.badRequest().body(new MensajeRespuesta(
 					"Error: ¡No se ha ingreaso los parametros correctos!"));
 		}
+
+		List<DatosPorMunicipio> datosPorMunicipios = covidService.getDatosPorMunicipio(municipio);
+		if (datosPorMunicipios == null) {
+			logger.error(">> La lista de municipios es nula");
+			return ResponseEntity.badRequest().body(new MensajeRespuesta(
+					"Error: ¡No se han encontrado coincidencias, verifica e inténtalo nuevamente!"));
+		}
+
+		return ResponseEntity.ok(datosPorMunicipios);
 	}
 
 }
